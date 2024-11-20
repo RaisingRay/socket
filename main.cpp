@@ -23,7 +23,7 @@ int main(){
     memset(&addr_sock_local,0,sizeof(addr_sock_local));
     addr_sock_local.sin_family=AF_INET;
    // addr_sock_local.sin_addr.s_addr=INADDR_ANY;
-    addr_sock_local.sin_addr.s_addr=inet_addr(ip);
+    addr_sock_local.sin_addr.s_addr=inet_addr(ip.c_str());
     addr_sock_local.sin_port=htons(3000);
 
 
