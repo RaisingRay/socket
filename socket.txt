@@ -1,0 +1,87 @@
+
+socket(int domain, int type, int protocol)
+
+    domain: Address family (e.g., AF_INET for IPv4).
+    type: Socket type (e.g., SOCK_DGRAM for UDP).
+    protocol: Protocol (0 for default protocol).
+    Returns: File descriptor for the socket, or -1 on error.
+
+bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
+
+    sockfd: Socket file descriptor.
+    addr: Pointer to sockaddr structure with local address/port.
+    addrlen: Size of the sockaddr structure.
+    Returns: 0 on success, or -1 on error.
+
+sendto(int sockfd, const void *message, size_t length, int flags, const struct sockaddr *dest_addr, socklen_t addrlen)
+
+    sockfd: Socket file descriptor.
+    message: Pointer to the message buffer.
+    length: Length of the message.
+    flags: Transmission flags (usually 0 for UDP).
+    dest_addr: Pointer to sockaddr structure for the destination.
+    addrlen: Size of the sockaddr structure.
+    Returns: Number of bytes sent, or -1 on error.
+
+recvfrom(int sockfd, void *buffer, size_t length, int flags, struct sockaddr *src_addr, socklen_t *addrlen)
+
+    sockfd: Socket file descriptor.
+    buffer: Pointer to the buffer for receiving data.
+    length: Size of the buffer.
+    flags: Reception flags (usually 0 for UDP).
+    src_addr: Pointer to sockaddr structure for the sender.
+    addrlen: Pointer to a variable to store the size of the sockaddr structure.
+    Returns: Number of bytes received, or -1 on error.
+
+
+
+
+
+    Reasons for Using memset
+
+    Avoid Undefined Behavior:
+        If a structure like sockaddr_in has padding or unused fields (depending on the platform), leaving them uninitialized can lead to undefined behavior or unexpected results.
+
+    Ensure Consistent Behavior:
+        Zeroing out the structure ensures that all fields not explicitly assigned are reliably set to 0 or equivalent, which is often the desired default.
+
+    Socket Programming Requirements:
+        Networking structures like sockaddr_in are parsed by system calls (bind, sendto, etc.). If fields are left uninitialized, the kernel may misinterpret the contents.
+
+    Compatibility and Portability:
+        Some fields may not be explicitly required in your program but might be used internally by the operating system. Zeroing ensures compatibility across platforms and versions.
+
+
+
+The function htons stands for "host to network short". It converts a 16-bit integer (typically a port number) from the host's byte order (endianness) to network byte order.
+Why Is It Needed?
+Byte Order (Endianness)
+
+    Host Byte Order:
+        This refers to the byte order used by the machine's CPU.
+        CPUs can be little-endian (e.g., x86) or big-endian (e.g., some embedded systems).
+    Network Byte Order:
+        The Internet Protocol requires all multi-byte values (e.g., port numbers, IP addresses) to be sent in big-endian format.
+
+Example Without htons
+
+Suppose a port number is 8080 (decimal), which is 0x1F90 in hexadecimal:
+
+    In little-endian:
+        The bytes are stored as 0x90 0x1F.
+    In big-endian:
+        The bytes are stored as 0x1F 0x90.
+
+If the host is little-endian and sends the port number directly without conversion, the receiver (expecting big-endian) will interpret the bytes incorrectly. htons ensures the value is correctly converted.
+Function Prototype
+
+#include <arpa/inet.h>
+
+uint16_t htons(uint16_t hostshort);
+
+    Parameter:
+        hostshort: A 16-bit integer in the host's byte order.
+    Return Value:
+        The converted value in network byte order (big-endian).
+
+
